@@ -1,1 +1,0 @@
-This repository contains completed Machine Learning/Data Science/Data Analysis projects in the form of Jupyter notebooks. These can be opened up either directly from github or by going to https://nbviewer.jupyter.org/github/mldiva/ml_projects/tree/master/
