@@ -1,0 +1,74 @@
+---
+title: "Blood_Donation_Prob"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Predicting Blood Donations
+
+This is an analysis of a dataset from drivendata.org. It predicts the probability of a blood donor making a donation in March 2007. This is a small dataset of ~600 observations with the following variables:
++ Months since Last Donation
++ Number of Donations
++ Total Volume Donated (in c.c.)
++ Months Since First Donation
++ Whether the donor gave blood in March 2007
+
+The deliverable for the analysis is a list of donors along with their probability of donating blood in March 2007.
+
+This analysis was done in R.
+
+```{r Summary}
+#Read in the data
+blood=read.csv('Training.csv', header=T)
+test=read.csv('Test.csv', header=T)
+#Print the initial structure and variables and the first few rows
+dim(blood)
+names(blood)
+head(blood)
+```
+
+Now for some E.D.A
+Some summary statistics
+
+```{r structure}
+#Let's change the last column to a factor (since this is a binary variable)
+blood$Made.Donation.in.March.2007=as.factor(blood$Made.Donation.in.March.2007)
+
+#Now we print the structure, summary, and first few rows
+str(blood)
+summary(blood)
+head(blood)
+```
+
+This is all very straghtforward - there are no missing values and no suspicious summary statistics. So let's move on to the analysis. 
+
+### The question we want to answer with this analysis
+
+What is the probability a donor will give blood in March 2007?
+
+To answer this question, I'll run a logistic regression analysis.
+
+```{r glmfit}
+fit <- glm(Made.Donation.in.March.2007~Months.since.Last.Donation+Number.of.Donations+
+           Total.Volume.Donated..c.c..+Months.since.First.Donation,
+           data=blood,family=binomial())
+summary(fit) # display results
+pred=predict(fit, newdata=test, type="response") # predicted values
+```
+This result put me in the top 11% of the competition submissions. Not bad, but I'll try a subset of the predictor variables to see if I can get a bit higher.
+
+```{r glmfit2}
+fit2 <- glm(Made.Donation.in.March.2007~Months.since.Last.Donation+Number.of.Donations+
+           Months.since.First.Donation,
+           data=blood,family=binomial())
+summary(fit2) # display results
+pred2=predict(fit, newdata=test, type="response") # predicted values
+```
+And this kept me in the ~89th percentile. I'll stop here. Both of these models give a log loss of 0.4457, which is very close to optimal.
+
+Now the preceding analysis was primarily intended for simple prediction of blood donation for existing blood donors. Hoever depending on the demographics of the blood donor pool, we may be able to draw some meaningful conclusions from the logistic regression coefficients. That is, for donors similar in profile to the donor pool, we might infer that while all other variables are held constant, each subsequent donation translates into a exp(.129921)=1.138738 odds of donating blood in March 2007. That is, number of donations is associated with a slightly increased odds of donating blood again in March 2007. Similarly, each increase of one month since last donation is associated with a slightly decreased odds of donating blood in March 2007.
+
+Care must of course be taken to analyze the characteristics of the original donor pool before making such inferences, since the demographics of this pool may not allow us to extrapolate the findings to the larger population.
