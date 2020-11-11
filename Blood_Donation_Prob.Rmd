@@ -18,7 +18,7 @@ This is an analysis of a dataset from drivendata.org. It predicts the probabilit
 
 The deliverable for the analysis is a list of donors along with their probability of donating blood in March 2007.
 
-This analysis was done in R.
+This analysis was done in R
 
 ```{r Summary}
 #Read in the data
